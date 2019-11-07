@@ -26,14 +26,11 @@ namespace SNAZE{
 
             char direction; //< Current direction status --> DEFAULT = NORTH.
 
+            std::vector< std::pair< size_t, size_t > > snakeBody; //< Snake body.
+
             life_size lifes; //< Number of lifes
 
         public:
-
-            // Public for class maze.
-            std::vector< std::pair< size_t, size_t > > snakeBody; //< Snake body.
-
-      /*--------------------------------- Methods ----------------------------------------*/
 
             //< Constructor
             snake()
