@@ -1,8 +1,10 @@
-#include "../include/maze.h"
+#include "../include/snakegame.h"
 
-int main ( int agrc, char *argv[] )
+int main ( int argc, char *argv[] )
 {
-    SNAZE::snake cobra;
+    SNAZE::SnakeGame game;
+
+    game.initialize( argc, argv );
 
     return EXIT_SUCCESS;
 }
