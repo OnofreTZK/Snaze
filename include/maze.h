@@ -9,6 +9,7 @@
 #include <cassert> // assert's tests
 #include <chrono> // time manip
 #include <random> //mt19937 ( random numbers )
+#include <cctype> // isdigit()
 
 namespace SNAZE{
 
@@ -31,8 +32,9 @@ namespace SNAZE{
             //===================================================================
 
             // Constructor and destructor
-            maze()
+            maze( size_t row, size_t col )
             {
+                setMeasures( row, col );
                 pellet = "\x1b[31m\x1b[0m";
             }
 
