@@ -44,9 +44,9 @@ namespace SNAZE{
 
                 configParser( _levels, filename );
 
-                _levels[0].randPellet();
+                _levels[2].randPellet();
 
-                _levels[0].printMaze(cobra);
+                _levels[2].printMaze(cobra);
 
             }
 

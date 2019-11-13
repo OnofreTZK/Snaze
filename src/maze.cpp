@@ -7,7 +7,7 @@
 
 
 namespace SNAZE{
-
+//==============================================================================================
     void maze::setMeasures( size_t row, size_t col )
     {
         lRow = row;
@@ -29,7 +29,7 @@ namespace SNAZE{
         assert( m_maze[start_pos.first][start_pos.second] == '*' );
 
     }
-
+//==============================================================================================
 
     void maze::renderMaze( std::vector< std::string > & init )
     {
@@ -42,6 +42,7 @@ namespace SNAZE{
             }
         }
     }
+//==============================================================================================
 
 
     void maze::randPellet()
@@ -66,10 +67,19 @@ namespace SNAZE{
             }
         }
 
-        m_maze[randRow][randCol] = 'A';
+        m_maze[randRow][randCol] = '@';
 
 
     }
+//==============================================================================================
+
+
+    /*void maze:findSolution()
+    {
+        
+    }*/
+//==============================================================================================
+
 
     void maze::printMaze( SNAZE::snake const & cobra )
     {
@@ -89,7 +99,7 @@ namespace SNAZE{
                 {
                     std::cout << " ";
                 }
-                if( m_maze[i][j] == 'A' ) // APPLE
+                if( m_maze[i][j] == '@' ) // APPLE
                 {
                     std::cout << pellet;
                 }
@@ -102,6 +112,7 @@ namespace SNAZE{
         }
 
     }
+//==============================================================================================
 
 } // END NAMESPACE
 
@@ -129,33 +140,41 @@ void configParser( std::vector< SNAZE::maze > & _levels, std::string filename )
 
 /*---------------------------------- Parsing --------------------------------------------*/
 
-        while( inFile )
+        std::string buffer; // buffering the content in file
+        std::string line; // buffering a line.
+        std::stringstream ss;
+
+        // Getting each line and putting in a stringstream.
+        while( std::getline( inFile, buffer ) )
+        {
+            ss << buffer << std::endl;
+        }
+
+        //buffer.clear();
+        //buffer = ss.str();
+
+        inFile.close();
+
+        while( ss.good() )
         {
 
             //< getting row and cols.
-            inFile >> row;
-            inFile >> col;
+            ss >> row >> col;
 
-            SNAZE::maze aux( row+1, col );
-
-            std::string buffer; // string to get lines.
+            SNAZE::maze aux( row, col );
 
             _levels.push_back(aux); // getting space in vector of levels;
 
-            // parser to get each char
-            for( int i = 0; i < row+1; i++ )
+            // Countering blank space and endlines.
+            while( ss.peek() == ' ' or ss.peek() == '\n' )
             {
-                std::getline( inFile, buffer );
+                ss.get();
+            }
 
-                for( int j = 0; j < col; j++ )
-                {
-                    aux.m_maze[i][j] = buffer[j];
-
-                    if( aux.m_maze[i][j] == '*' )
-                    {
-                        aux.setStart_pos( i, j );
-                    }
-                }
+            for( int i{0}; i < row; i ++ )
+            {
+                std::getline( ss, line );
+                aux.m_maze[i] = line;
             }
 
             //< Add maze to vector of levels.
@@ -163,7 +182,6 @@ void configParser( std::vector< SNAZE::maze > & _levels, std::string filename )
 
         }
 
-        inFile.close();
 
   }
 

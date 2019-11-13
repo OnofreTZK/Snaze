@@ -10,6 +10,7 @@
 #include <chrono> // time manip
 #include <random> //mt19937 ( random numbers )
 #include <cctype> // isdigit()
+#include <sstream> // stringstream
 
 namespace SNAZE{
 
@@ -75,8 +76,5 @@ namespace SNAZE{
 
 // Parser function to get initial config.
 void configParser( std::vector< SNAZE::maze > & _levels, std::string filename );
-
-// Source
-#include "./maze.inl"
 
 #endif

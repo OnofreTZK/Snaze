@@ -57,43 +57,43 @@ namespace SNAZE{
 
 
             //< Return current direction
-            char const getDirection() const
+            inline char const getDirection() const
             {
                 return direction;
             }
 
             //<  Change direction
-            void setDirection( char DIRECT )
+            inline void setDirection( char DIRECT )
             {
                 direction = DIRECT;
             }
 
             //< Increase body after eat
-            void increaseBody( size_t const i, size_t const j )
+            inline void increaseBody( size_t const i, size_t const j )
             {
                 snakeBody.push_back( std::make_pair( i, j ) );
             }
 
             //< Reset body to the initial config.
-            void resetBody()
+            inline void resetBody()
             {
                 snakeBody.erase( snakeBody.begin() + 1, snakeBody.end() );
             }
 
             //< Decrement life
-            void lostLife()
+            inline void lostLife()
             {
                 lifes--;
             }
 
             //< return body size
-            body_size size()
+            inline body_size size()
             {
                 return snakeBody.size();
             }
 
             //< return number of lifes
-            life_size life()
+            inline life_size life()
             {
                 return lifes;
             }

@@ -22,7 +22,8 @@ include_directories ( include )
 # define the sources for the project
 
 add_executable ( gsnake
-				 src/main.cpp ) #this is the application and has the main
+				 src/main.cpp
+         src/maze.cpp  ) #this is the application and has the main
 
 # define C++11 standard
 set_property (TARGET gsnake PROPERTY CXX_STANDARD 11)
