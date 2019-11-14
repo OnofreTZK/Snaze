@@ -14,13 +14,15 @@ namespace SNAZE{
 
         private:
             //< State machine for game loop pattern.
-            enum class g_state{ START=0, RUN, DEAD, LEVEL_UP, GAME_OVER };
+            enum class state{ START=0, RUN, DEAD, LEVEL_UP, GAME_OVER };
 
             std::vector< std::pair< size_t, size_t > > measures; //< level's maze measures.
 
             std::vector< SNAZE::maze > _levels; //< vector of mazes.
 
             SNAZE::snake cobra; //< object snake
+
+            state StateMachine;
 
         public:
 
@@ -29,26 +31,14 @@ namespace SNAZE{
             //< Destructor.
             virtual ~SnakeGame(){}
 
-
-            virtual void initialize( int argc, char *argv[] )
-            {
-                if( argc < 2 )
-                {
-                    std::cerr << ">>>\x1b[93mToo few arguments!\x1b[0m\n"
-                              << ">>>The program need a config file to start the simulation!\n"
-                              << ">>>Simulation \x1b[31m[FAILED]\x1b[0m\n";
-                    exit(1);
-                }
-
-                std::string filename = argv[1];
-
-                configParser( _levels, filename );
-
-                _levels[2].randPellet();
-
-                _levels[2].printMaze(cobra);
-
-            }
+            /*< Game initializer
+             * -> Read file
+             * -> Render levels( mazes )
+             * -> Set snake starter position.
+             * -> Rand first pellet.
+             * -> Alloc levels vector.
+             */
+            virtual void initialize( int argc, char *argv[] );
 
 
             virtual void render(){}

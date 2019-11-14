@@ -1,4 +1,4 @@
-#include "./maze.h"
+#include "../include/maze.h"
 
 /*
  * file source: maze.h
@@ -61,12 +61,14 @@ namespace SNAZE{
             randRow =  generatorRow()%lRow;
             randCol = generatorCol()%lCol;
 
+            // Check a valid position.
             if( m_maze[randRow][randCol] == ' ' )
             {
                 break;
             }
         }
 
+        // Setting the position in maze;
         m_maze[randRow][randCol] = '@';
 
 
@@ -155,15 +157,13 @@ void configParser( std::vector< SNAZE::maze > & _levels, std::string filename )
 
         inFile.close();
 
-        while( ss.good() )
+        while( !ss.eof() )
         {
 
-            //< getting row and cols.
+            // getting row and cols.
             ss >> row >> col;
 
             SNAZE::maze aux( row, col );
-
-            _levels.push_back(aux); // getting space in vector of levels;
 
             // Countering blank space and endlines.
             while( ss.peek() == ' ' or ss.peek() == '\n' )
@@ -176,6 +176,8 @@ void configParser( std::vector< SNAZE::maze > & _levels, std::string filename )
                 std::getline( ss, line );
                 aux.m_maze[i] = line;
             }
+
+            _levels.push_back(aux); // getting space in vector of levels;
 
             //< Add maze to vector of levels.
             _levels[lvl++].renderMaze(aux.m_maze);

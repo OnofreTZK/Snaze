@@ -23,7 +23,8 @@ include_directories ( include )
 
 add_executable ( gsnake
 				 src/main.cpp
-         src/maze.cpp  ) #this is the application and has the main
+         src/maze.cpp
+         src/snakegame.cpp  ) #this is the application and has the main
 
 # define C++11 standard
 set_property (TARGET gsnake PROPERTY CXX_STANDARD 11)
