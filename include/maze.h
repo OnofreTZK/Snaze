@@ -1,6 +1,11 @@
 #ifndef MAZE_H
 #define MAZE_H
 
+/*
+ * Class Maze file
+ * Author: Tiago Onofre
+ * */
+
 #include "../include/jararaca.h"
 
 #include <fstream> // files
@@ -8,9 +13,13 @@
 #include <cstring>
 #include <cassert> // assert's tests
 #include <chrono> // time manip
-#include <random> //mt19937 ( random numbers )
+#include <random> // mt19937 ( random numbers )
 #include <cctype> // isdigit()
 #include <sstream> // stringstream
+#include <stack> // std::deque( path )
+
+#define MARK '.'
+#define CROSS_MARK 'x'
 
 namespace SNAZE{
 
@@ -23,10 +32,14 @@ namespace SNAZE{
 
             std::string pellet; //< Apple
 
-            std::vector< std::pair< size_t, size_t > > solution; //< vector for solution coordinates.
+            std::stack< std::pair< size_t, size_t > > solution; //< vector for solution coordinates.
+
             std::pair< size_t, size_t > start_pos; //< snake start position
 
         public:
+
+            // Public for snakegame manager.
+            SNAZE::snake cobra; //< object snake
 
             // Maze body ========================================================
             std::vector< std::string > m_maze; //< matrix to represent the maze.
@@ -58,6 +71,32 @@ namespace SNAZE{
             //< Random valid position for pellet.
             void randPellet();
 
+            //< Verify walls around the snake;
+            std::vector< char > checkSides( std::pair< size_t, size_t > currentPos );
+
+            /*-------------------------- Get Directions ------------------------------------*/
+
+            inline std::pair< size_t, size_t > moveUp( std::pair<size_t, size_t> currentPos )
+            {
+                return std::make_pair( currentPos.first - 1, currentPos.second );
+            }
+
+            inline std::pair< size_t, size_t > moveRigth( std::pair<size_t, size_t> currentPos )
+            {
+                return std::make_pair( currentPos.first, currentPos.second + 1 );
+            }
+
+            inline std::pair< size_t, size_t > moveDown( std::pair<size_t, size_t> currentPos )
+            {
+                return std::make_pair( currentPos.first + 1, currentPos.second );
+            }
+
+            inline std::pair< size_t, size_t > moveLeft( std::pair<size_t, size_t> currentPos )
+            {
+                return std::make_pair( currentPos.first, currentPos.second - 1 );
+            }
+            /*-----------------------------------------------------------------------------*/
+
             //< Algorithm to find the best way to apple
             void findSolution();
 
@@ -68,7 +107,7 @@ namespace SNAZE{
             void refreshMaze();
 
             //< Print current config in terminal.
-            void printMaze(SNAZE::snake const & cobra);
+            void printMaze();
 
 
     };

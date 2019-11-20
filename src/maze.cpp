@@ -39,8 +39,16 @@ namespace SNAZE{
             for( int j{0}; j < lCol; j++ )
             {
                 m_maze[i][j] = init[i][j];
+
+                // Get start position in maze and add to snake body( the head );
+                if( m_maze[i][j] == '*' )
+                {
+                    setStart_pos( i, j );
+                    cobra.snakeBody[0] = std::make_pair( i, j );
+                }
             }
         }
+
     }
 //==============================================================================================
 
@@ -75,25 +83,74 @@ namespace SNAZE{
     }
 //==============================================================================================
 
-
-    /*void maze:findSolution()
+    std::vector< char > maze::checkSides( std::pair< size_t, size_t > currentPos )
     {
-        
-    }*/
+        std::vector< char > setDir; 
+
+        if( m_maze[currentPos.first + 1][currentPos.second] != '#' )
+        {
+            setDir.push_back( SOUTH );
+        }
+
+        if( m_maze[currentPos.first - 1][currentPos.second] != '#' )
+        {
+            setDir.push_back( NORTH );
+        }
+
+        if( m_maze[currentPos.first][currentPos.second - 1] != '#' )
+        {
+            setDir.push_back( WEST );
+        }
+
+        if( m_maze[currentPos.first][currentPos.second + 1] != '#' )
+        {
+            setDir.push_back( EAST );
+        }
+
+        return setDir;
+    }
+
+//==============================================================================================
+
+    void maze::findSolution()
+    {
+        // Maze runner.
+        std::pair< size_t, size_t > pathfinder = start_pos;
+
+        std::vector< std::vector< char > > setDir;
+
+        //< While not found the apple.
+        while( m_maze[pathfinder.first][pathfinder.second] == '@' )
+        {
+             //checkSide
+             break;
+        }
+
+        setStart_pos( pathfinder.first, pathfinder.second );
+
+    }
 //==============================================================================================
 
 
-    void maze::printMaze( SNAZE::snake const & cobra )
+    void maze::printMaze()
     {
         for( int i{0}; i < lRow; i++ )
         {
             for( int j{0}; j < lCol; j++ )
             {
+                if( m_maze[i][j] == CROSS_MARK )
+                {
+                    std::cout << " ";
+                }
+                if( m_maze[i][j] == MARK )
+                {
+                    std::cout << " ";
+                }
                 if( m_maze[i][j] == '#' ) // WALL
                 {
                     std::cout << "█";
                 }
-                if( m_maze[i][j] == '*' and cobra.direction == NORTH ) // START POS/SNAKE HEAD
+                if( m_maze[i][j] == '*') // START POS/SNAKE HEAD
                 {
                     std::cout << "\x1b[94m▲\x1b[0m";
                 }

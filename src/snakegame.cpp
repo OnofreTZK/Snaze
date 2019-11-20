@@ -3,6 +3,24 @@
 
 namespace SNAZE{
 
+//===============================================================================================
+    void printIntro()
+    {
+        std::stringstream ss;
+        ss <<   "\033[93;1;m********************************************\n" <<
+                "*                                          *\n" <<
+                "*  ******  *     *  ******  ******  ****** *\n" <<
+                "*  *       * *   *  *    *      *   *      *\n" <<
+                "*  ******  *  *  *  * ** *    *     ****   *\n" <<
+                "*       *  *   * *  *    *  *       *      *\n" <<
+                "*  ******  *    **  *    *  ******  ****** *\n" <<
+                "*                                          *\n" <<
+                "********************************************\n\033[0m";
+
+        std::cout << ss.str() << std::endl;
+    }
+
+//===============================================================================================
     void SnakeGame::initialize( int argc, char *argv[] )
     {
         // Checking parameter.
@@ -22,11 +40,12 @@ namespace SNAZE{
         configParser( _levels, filename );
         /*------------------------------*/
 
-        // Initializing state machime.
+        // Initializing state machine.
         StateMachine = state::START;
 
         std::cout << ">>>Levels loaded: " << _levels.size()-1 << "\n";
 
+        printIntro();
 
         std::cout << "\n\t->Press \x1b[94m<ENTER>\x1b[0m to start.\n";
 
@@ -37,7 +56,7 @@ namespace SNAZE{
 
         _levels[0].randPellet();
 
-        _levels[0].printMaze(cobra);
+        _levels[0].printMaze();
 
 }
 

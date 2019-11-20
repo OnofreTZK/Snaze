@@ -20,13 +20,14 @@ namespace SNAZE{
 
             std::vector< SNAZE::maze > _levels; //< vector of mazes.
 
-            SNAZE::snake cobra; //< object snake
-
             state StateMachine;
 
         public:
 
             SnakeGame(){/*EMPTY*/}
+
+            //< Print SNAZE in output.
+            friend void printIntro();
 
             //< Destructor.
             virtual ~SnakeGame(){}
