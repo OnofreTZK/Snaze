@@ -24,10 +24,6 @@ namespace SNAZE{
     void maze::setStart_pos( size_t row, size_t col )
     {
         start_pos = std::make_pair( row, col );
-
-        // Testing.
-        assert( m_maze[start_pos.first][start_pos.second] == '*' );
-
     }
 //==============================================================================================
 
@@ -66,7 +62,7 @@ namespace SNAZE{
 
         while( true )
         {
-            randRow =  generatorRow()%lRow;
+            randRow = generatorRow()%lRow;
             randCol = generatorCol()%lCol;
 
             // Check a valid position.
@@ -83,28 +79,28 @@ namespace SNAZE{
     }
 //==============================================================================================
 
-    std::vector< char > maze::checkSides( std::pair< size_t, size_t > currentPos )
+    maze::Node maze::checkSides( std::pair< size_t, size_t > currentPos )
     {
-        std::vector< char > setDir; 
+        maze::Node setDir;
 
         if( m_maze[currentPos.first + 1][currentPos.second] != '#' )
         {
-            setDir.push_back( SOUTH );
+            setDir.directions.push( SOUTH );
         }
 
         if( m_maze[currentPos.first - 1][currentPos.second] != '#' )
         {
-            setDir.push_back( NORTH );
+            setDir.directions.push( NORTH );
         }
 
         if( m_maze[currentPos.first][currentPos.second - 1] != '#' )
         {
-            setDir.push_back( WEST );
+            setDir.directions.push( WEST );
         }
 
         if( m_maze[currentPos.first][currentPos.second + 1] != '#' )
         {
-            setDir.push_back( EAST );
+            setDir.directions.push( EAST );
         }
 
         return setDir;
@@ -112,18 +108,63 @@ namespace SNAZE{
 
 //==============================================================================================
 
+    void maze::moveBody( std::pair< size_t, size_t > & currentPos )
+    {
+        switch( cobra.direction )
+        {
+            case NORTH : currentPos = this->moveUp( currentPos );
+                         break;
+            case SOUTH : currentPos = this->moveDown( currentPos );
+                         break;
+            case WEST : currentPos = this->moveLeft( currentPos );
+                        break;
+            case EAST : currentPos = this->moveRight( currentPos );
+                        break;
+            default : std::cerr << "\x1b[31mERROR:\x1b[0msnake can't be moved\n"; exit(1);
+
+        }
+
+
+    }
+//==============================================================================================
     void maze::findSolution()
     {
         // Maze runner.
         std::pair< size_t, size_t > pathfinder = start_pos;
 
-        std::vector< std::vector< char > > setDir;
+        // Snake fake body to avoid move mistakes conditionals.
+        std::vector< std::pair< size_t, size_t > > fakeBody;
+
+
+        //=============================================
+        // Bifurcation and direction data.
+        //=============================================
+        // vector of bifurcations.
+         std::vector< Node > coordinates(1);
+
+        // Number of bifurcations.
+        size_t curr_Pos = 0;
+        //=============================================
+
 
         //< While not found the apple.
-        while( m_maze[pathfinder.first][pathfinder.second] == '@' )
+        while( m_maze[pathfinder.first][pathfinder.second] != '@' )
         {
-             //checkSide
-             break;
+            //< get number of bifurcations in the current position.
+            coordinates[curr_Pos] = this->checkSides( pathfinder );
+
+            // set the top direction in the stack of valid directions..
+            cobra.setDirection( coordinates[curr_Pos].directions.top() );
+
+            std::cout << "coordenada: " << pathfinder.first << ", " << pathfinder.second << "\n";
+
+            std::cout << "direction: " << cobra.getDirection() << "\n";
+            this->moveBody( pathfinder );
+
+            cobra.snakeBody[0] = pathfinder;
+
+            std::cout << "coordenada: " << pathfinder.first << ", " << pathfinder.second << "\n";
+            break;
         }
 
         setStart_pos( pathfinder.first, pathfinder.second );
@@ -138,31 +179,29 @@ namespace SNAZE{
         {
             for( int j{0}; j < lCol; j++ )
             {
-                if( m_maze[i][j] == CROSS_MARK )
-                {
-                    std::cout << " ";
-                }
-                if( m_maze[i][j] == MARK )
-                {
-                    std::cout << " ";
-                }
-                if( m_maze[i][j] == '#' ) // WALL
-                {
-                    std::cout << "█";
-                }
-                if( m_maze[i][j] == '*') // START POS/SNAKE HEAD
+                // START POS/SNAKE HEAD
+                if( i == cobra.snakeBody[0].first and j == cobra.snakeBody[0].second )
                 {
                     std::cout << "\x1b[94m▲\x1b[0m";
                 }
-                if( m_maze[i][j] == '.' ) // INVISIBLE WALL
+                // IGNORE OLD ORIGIN POS.
+                else if( m_maze[i][j] == '*' )
                 {
+                    if( m_maze[i][j] == m_maze[cobra.snakeBody[0].first][cobra.snakeBody[0].second])
+                    {
+                        continue;
+                    }
                     std::cout << " ";
                 }
-                if( m_maze[i][j] == '@' ) // APPLE
+                else if( m_maze[i][j] == '#' ) // WALL
+                {
+                    std::cout << "█";
+                }
+                else if( m_maze[i][j] == '@' ) // APPLE
                 {
                     std::cout << pellet;
                 }
-                if( m_maze[i][j] == ' ' ) // FREE WAY
+                else
                 {
                     std::cout << " ";
                 }

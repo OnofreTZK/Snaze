@@ -58,6 +58,10 @@ namespace SNAZE{
 
         _levels[0].printMaze();
 
+        _levels[0].findSolution();
+
+        _levels[0].printMaze();
+
 }
 
 } // END NAMESPACE.

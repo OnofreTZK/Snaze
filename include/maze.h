@@ -38,6 +38,14 @@ namespace SNAZE{
 
         public:
 
+            //< Node to save the coordinate and number of bifurcations.
+            struct Node{
+                std::pair< size_t, size_t > coordinate;
+
+                std::stack< char > directions;
+            };
+            /*=========================================================*/
+
             // Public for snakegame manager.
             SNAZE::snake cobra; //< object snake
 
@@ -72,26 +80,29 @@ namespace SNAZE{
             void randPellet();
 
             //< Verify walls around the snake;
-            std::vector< char > checkSides( std::pair< size_t, size_t > currentPos );
+            Node checkSides( std::pair< size_t, size_t > currentPos );
+
+            //< Move pathfinder and the fakebody.
+            void moveBody( std::pair< size_t, size_t > &currentPos );
 
             /*-------------------------- Get Directions ------------------------------------*/
 
-            inline std::pair< size_t, size_t > moveUp( std::pair<size_t, size_t> currentPos )
+            inline std::pair< size_t, size_t > moveUp( std::pair<size_t, size_t> & currentPos )
             {
                 return std::make_pair( currentPos.first - 1, currentPos.second );
             }
 
-            inline std::pair< size_t, size_t > moveRigth( std::pair<size_t, size_t> currentPos )
+            inline std::pair< size_t, size_t > moveRight( std::pair<size_t, size_t> & currentPos )
             {
                 return std::make_pair( currentPos.first, currentPos.second + 1 );
             }
 
-            inline std::pair< size_t, size_t > moveDown( std::pair<size_t, size_t> currentPos )
+            inline std::pair< size_t, size_t > moveDown( std::pair<size_t, size_t> & currentPos )
             {
                 return std::make_pair( currentPos.first + 1, currentPos.second );
             }
 
-            inline std::pair< size_t, size_t > moveLeft( std::pair<size_t, size_t> currentPos )
+            inline std::pair< size_t, size_t > moveLeft( std::pair<size_t, size_t> & currentPos )
             {
                 return std::make_pair( currentPos.first, currentPos.second - 1 );
             }
