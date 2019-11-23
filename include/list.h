@@ -76,7 +76,7 @@ namespace sc{ // sequence container.
                         }
 
                         // it++
-                        iterator operator++(value_type)
+                        iterator operator++(int)
                         {
                             iterator temp(current);
                             current = current->next;
@@ -91,7 +91,7 @@ namespace sc{ // sequence container.
                         }
 
                         // it--
-                        iterator operator--(value_type)
+                        iterator operator--(int)
                         {
                             iterator temp(current);
                             current = current->prev;
@@ -174,7 +174,7 @@ namespace sc{ // sequence container.
                         }
 
                         // it++
-                        const_iterator operator++(value_type)
+                        const_iterator operator++(int)
                         {
                             const_iterator temp(current);
                             current = current->next;
@@ -189,7 +189,7 @@ namespace sc{ // sequence container.
                         }
 
                         // it--
-                        const_iterator operator--(value_type)
+                        const_iterator operator--(int)
                         {
                             const_iterator temp(current);
                             current = current->prev;

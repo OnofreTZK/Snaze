@@ -6,5 +6,7 @@ int main ( int argc, char *argv[] )
 
     game.initialize( argc, argv );
 
+    game.render();
+
     return EXIT_SUCCESS;
 }

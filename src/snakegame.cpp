@@ -54,12 +54,15 @@ namespace SNAZE{
             continue;
         }
 
-        _levels[0].randPellet();
+    }
 
-        _levels[0].findSolution( DEAD );
+//===============================================================================================
 
-        _levels[0].printMaze();
+    void SnakeGame::render()
+    {
+        _levels[num_levels].printMaze();
+    }
 
-}
 
+//===============================================================================================
 } // END NAMESPACE.

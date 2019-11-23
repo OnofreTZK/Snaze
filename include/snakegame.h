@@ -22,12 +22,15 @@ namespace SNAZE{
 
             state StateMachine;
 
+            //< Death control.
+            bool DEAD;
+
+            size_t num_levels;
+
         public:
 
-            //< Death control.
-            bool DEAD; 
 
-            SnakeGame(){/*EMPTY*/}
+            SnakeGame(){ num_levels=0; }
 
             //< Print SNAZE in output.
             friend void printIntro();
@@ -45,7 +48,7 @@ namespace SNAZE{
             virtual void initialize( int argc, char *argv[] );
 
 
-            virtual void render(){}
+            virtual void render();
             virtual void update(){}
             virtual void process_events(){}
             virtual bool game_over(){ return true;}

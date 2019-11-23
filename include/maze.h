@@ -6,7 +6,8 @@
  * Author: Tiago Onofre
  * */
 
-#include "../include/jararaca.h"
+#include "./list.h"
+#include "./jararaca.h"
 
 #include <fstream> // files
 #include <string> // std::string
@@ -21,6 +22,7 @@
 
 #define MARK '-'
 #define CROSS_MARK 'x'
+#define SNK_BDY '|'
 
 namespace SNAZE{
 
@@ -33,7 +35,8 @@ namespace SNAZE{
 
             std::string pellet; //< Apple
 
-            std::stack< std::pair< size_t, size_t > > solution; //< vector for solution coordinates.
+            sc::list< std::pair< size_t, size_t > > solution; //< list for solution coordinates.
+            //< My doubly linked list.
 
             std::pair< size_t, size_t > start_pos; //< snake start position
             std::pair< size_t, size_t > pelletPosition; //< Pellet position in the maze.

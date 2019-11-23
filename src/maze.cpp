@@ -54,7 +54,8 @@ namespace SNAZE{
         {
             for( int j{0}; j < m_maze[i].size(); j++ )
             {
-                if( m_maze[i][j] == MARK or m_maze[i][j] == CROSS_MARK  or m_maze[i][j] == '@')
+                if( m_maze[i][j] == MARK or m_maze[i][j] == CROSS_MARK or m_maze[i][j] == '@'
+                    or m_maze[i][j] == SNK_BDY )
                 {
                     m_maze[i][j] = ' ';
                 }
@@ -296,21 +297,20 @@ namespace SNAZE{
             // Positioning marker and marking maze.
             markerPrev = pathfinder;
 
-            if( coordinates.top().bifurcation == true )
+            if( m_maze[markerPrev.first][markerPrev.second] == MARK )
             {
-                if( m_maze[markerPrev.first][markerPrev.second] == MARK )
-                {
-                    m_maze[markerPrev.first][markerPrev.second] = CROSS_MARK;
-                }
-                else
-                {
-                    m_maze[markerPrev.first][markerPrev.second] = MARK;
-                }
+                m_maze[markerPrev.first][markerPrev.second] = CROSS_MARK;
+            }
+            else
+            {
+                m_maze[markerPrev.first][markerPrev.second] = MARK;
             }
 
             // Moving.
             this->moveBody( pathfinder );
 
+            // Mark current position only if are a bifurcation
+            // to eliminate that way in case of endline.
             if( coordinates.top().bifurcation == true )
             {
                 if( m_maze[pathfinder.first][pathfinder.second] == MARK )
@@ -326,23 +326,67 @@ namespace SNAZE{
         }
 
         // Adding the final position.
-        //coordinates.push( this->checkSides( pathfinder ) );
+        coordinates.push( new Node );
+        coordinates.top().coordinate = std::make_pair( pathfinder.first, pathfinder.second );
 
-        // Reversing positions.
+        // Reversing and passing positions to list of solutions.
         while( not coordinates.empty() )
         {
-            solution.push( std::make_pair( coordinates.top().coordinate.first,
+            solution.push_front( std::make_pair( coordinates.top().coordinate.first,
                                            coordinates.top().coordinate.second ) );
-            coordinates.pop();
+            coordinates.pop(); // Eliminating the stack
         }
 
-        std::cout << "solução: " << solution.size() << "\n";
-
+        //< Setting new start position --> pellet old position.
         setStart_pos( pathfinder.first, pathfinder.second );
 
     }
 //==============================================================================================
 
+    void maze::refreshSnake( std::vector< std::pair< size_t, size_t > > & s_body )
+    {
+        auto first = s_body.begin();
+        auto last = s_body.end() - 1;
+
+
+        //< Start ou post death situation.
+        if( cobra.size() == 1 )
+        {
+            cobra.snakeBody[0] = std::make_pair(solution.front().first, solution.front().second);
+            solution.pop_front();
+        }
+        else
+        {
+            //< Moving body with solution positions.
+            while( first != last )
+            {
+                std::iter_swap( last, first );
+                last--;
+            }
+
+            //< adding next position to the front.
+            cobra.snakeBody[0] = std::make_pair(solution.front().first, solution.front().second);
+            solution.pop_front();
+        }
+    }
+
+
+//==============================================================================================
+
+    void maze::refreshMaze()
+    {
+         this->clear();
+
+          auto first = cobra.snakeBody.begin();
+          auto last = cobra.snakeBody.end();
+
+          while ( first != last )
+          {
+              m_maze[first->first][first->second] = SNK_BDY;
+              first++;
+          }
+    }
+//==============================================================================================
 
     void maze::printMaze()
     {
@@ -351,19 +395,11 @@ namespace SNAZE{
             for( int j{0}; j < lCol; j++ )
             {
                 // START POS/SNAKE HEAD
-                if( i == cobra.snakeBody[0].first and j == cobra.snakeBody[0].second )
+                if( m_maze[i][j] == SNK_BDY )
                 {
-                    std::cout << "\x1b[94m▲\x1b[0m";
+                   std::cout << "\x1b[94mO\x1b[0m";
                 }
                 // IGNORE OLD ORIGIN POS.
-                else if( m_maze[i][j] == '*' )
-                {
-                    if( m_maze[i][j] == m_maze[cobra.snakeBody[0].first][cobra.snakeBody[0].second])
-                    {
-                        continue;
-                    }
-                    std::cout << " ";
-                }
                 else if( m_maze[i][j] == '#' ) // WALL
                 {
                     std::cout << "█";
@@ -371,6 +407,11 @@ namespace SNAZE{
                 else if( i == pelletPosition.first and
                          j == pelletPosition.second ) // APPLE
                 {
+                    if( m_maze[i][j] == SNK_BDY )
+                    {
+                        continue;
+                    }
+
                     std::cout << pellet;
                 }
                 else
