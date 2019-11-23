@@ -24,6 +24,9 @@ namespace SNAZE{
 
         public:
 
+            //< Death control.
+            bool DEAD; 
+
             SnakeGame(){/*EMPTY*/}
 
             //< Print SNAZE in output.

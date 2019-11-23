@@ -5,6 +5,7 @@
 #define EAST 'E'
 #define SOUTH 'S'
 #define WEST 'W'
+#define NULL_DIR '0'
 
 /*-------- Libraries --------*/
 #include <iostream> // cin cout
@@ -32,7 +33,7 @@ namespace SNAZE{
             std::vector< std::pair< size_t, size_t > > snakeBody; //< Snake body.
 
             // Public for class SnakeGame
-            char direction; //< Current direction status --> DEFAULT = NORTH.
+            char direction; //< Current direction status --> DEFAULT = NULL.
       /*--------------------------------- Methods ----------------------------------------*/
 
             //< Constructor
@@ -40,7 +41,7 @@ namespace SNAZE{
             {
 
                 // Setting default start direction.
-                direction = NORTH;
+                direction = NULL_DIR;
 
                 // Allocating head.
                 snakeBody.resize(1);

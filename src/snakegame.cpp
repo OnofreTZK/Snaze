@@ -56,9 +56,7 @@ namespace SNAZE{
 
         _levels[0].randPellet();
 
-        _levels[0].printMaze();
-
-        _levels[0].findSolution();
+        _levels[0].findSolution( DEAD );
 
         _levels[0].printMaze();
 

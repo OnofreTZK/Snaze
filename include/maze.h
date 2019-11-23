@@ -17,8 +17,9 @@
 #include <cctype> // isdigit()
 #include <sstream> // stringstream
 #include <stack> // std::deque( path )
+#include <queue> // std::queue
 
-#define MARK '.'
+#define MARK '-'
 #define CROSS_MARK 'x'
 
 namespace SNAZE{
@@ -35,6 +36,7 @@ namespace SNAZE{
             std::stack< std::pair< size_t, size_t > > solution; //< vector for solution coordinates.
 
             std::pair< size_t, size_t > start_pos; //< snake start position
+            std::pair< size_t, size_t > pelletPosition; //< Pellet position in the maze.
 
         public:
 
@@ -42,16 +44,25 @@ namespace SNAZE{
             struct Node{
                 std::pair< size_t, size_t > coordinate;
 
+                //< Valid directions to verify.
                 std::stack< char > directions;
+
+                //< tells to program if is a bifurcation.
+                bool bifurcation;
+
+                //< Basic constructor.
+                Node( bool condition=false ) : bifurcation(condition) {/*EMPTY*/}
             };
-            /*=========================================================*/
+            /*==================================================================*/
 
             // Public for snakegame manager.
             SNAZE::snake cobra; //< object snake
 
+
             // Maze body ========================================================
             std::vector< std::string > m_maze; //< matrix to represent the maze.
             //===================================================================
+
 
             // Constructor and destructor
             maze( size_t row, size_t col )
@@ -79,8 +90,11 @@ namespace SNAZE{
             //< Random valid position for pellet.
             void randPellet();
 
+            //< Count walls around to verify the bifurcation.
+            size_t wallCount( std::pair< size_t, size_t > const currentPos ) const;
+
             //< Verify walls around the snake;
-            Node checkSides( std::pair< size_t, size_t > currentPos );
+            Node checkSides( std::pair< size_t, size_t > const currentPos ) const;
 
             //< Move pathfinder and the fakebody.
             void moveBody( std::pair< size_t, size_t > &currentPos );
@@ -108,8 +122,14 @@ namespace SNAZE{
             }
             /*-----------------------------------------------------------------------------*/
 
+            //< Backtracking algorithm.
+            void backTracking( std::stack< Node > & coords, bool & deadline );
+
             //< Algorithm to find the best way to apple
-            void findSolution();
+            void findSolution( bool deadline );
+
+            //< Remove Trémaux marks.
+            void clear();
 
             //< Update snake position.
             void refreshSnake( std::vector< std::pair< size_t, size_t > > & s_body );
