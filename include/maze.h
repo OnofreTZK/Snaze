@@ -39,6 +39,7 @@ namespace SNAZE{
             //< My doubly linked list.
 
             std::pair< size_t, size_t > start_pos; //< snake start position
+            std::pair< size_t, size_t > current_pos; //< snake current position.
             std::pair< size_t, size_t > pelletPosition; //< Pellet position in the maze.
 
         public:
@@ -87,6 +88,12 @@ namespace SNAZE{
             //< get start position
             void setStart_pos( size_t row, size_t col );
 
+            inline void resetPos()
+            {
+                current_pos = start_pos;
+                cobra.snakeBody[0] = current_pos;
+            }
+
             //< create maze with initial config.
             void renderMaze( std::vector< std::string > & init );
 
@@ -129,13 +136,18 @@ namespace SNAZE{
             void backTracking( std::stack< Node > & coords, bool & deadline );
 
             //< Algorithm to find the best way to apple
-            void findSolution( bool deadline );
+            void findSolution( bool & deadline );
 
             //< Remove Trémaux marks.
             void clear();
 
             //< Update snake position.
             void refreshSnake( std::vector< std::pair< size_t, size_t > > & s_body );
+
+            inline bool isEaten()
+            {
+                return this->cobra.snakeBody[0] == this->pelletPosition;
+            }
 
             //< Refresh maze config with snake and pellet.
             void refreshMaze();

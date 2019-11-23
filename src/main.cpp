@@ -8,5 +8,12 @@ int main ( int argc, char *argv[] )
 
     game.render();
 
+    while( not game.game_over() )
+    {
+        game.process_events();
+        game.update();
+        game.render();
+    }
+
     return EXIT_SUCCESS;
 }

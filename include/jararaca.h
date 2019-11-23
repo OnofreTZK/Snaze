@@ -27,6 +27,8 @@ namespace SNAZE{
 
             life_size lifes; //< Number of lifes
 
+            size_t applesEaten; //< Number of apples eaten.
+
         public:
 
             // Public for class maze.
@@ -45,6 +47,8 @@ namespace SNAZE{
 
                 // Allocating head.
                 snakeBody.resize(1);
+
+                applesEaten=0;
 
                 // default number of lifes;
                 lifes = 5;
@@ -70,15 +74,19 @@ namespace SNAZE{
             }
 
             //< Increase body after eat
-            inline void increaseBody( size_t const i, size_t const j )
+            inline void increaseBody()
             {
-                snakeBody.push_back( std::make_pair( i, j ) );
+                snakeBody.push_back( std::make_pair(snakeBody[0].first,
+                                                    snakeBody[0].second ) );
+
+                applesEaten++;
             }
 
             //< Reset body to the initial config.
             inline void resetBody()
             {
-                snakeBody.erase( snakeBody.begin() + 1, snakeBody.end() );
+                snakeBody.clear();
+                snakeBody.resize(1);
             }
 
             //< Decrement life
@@ -97,6 +105,11 @@ namespace SNAZE{
             inline life_size life()
             {
                 return lifes;
+            }
+
+            inline size_t ate()
+            {
+                return applesEaten;
             }
 
 

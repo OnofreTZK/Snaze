@@ -54,15 +54,95 @@ namespace SNAZE{
             continue;
         }
 
+
     }
 
 //===============================================================================================
 
     void SnakeGame::render()
     {
+        //print stats.
         _levels[num_levels].printMaze();
     }
 
+//===============================================================================================
 
+    void SnakeGame::process_events()
+    {
+        //Thread control (fps).
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1000/15 ) );
+    }
+//===============================================================================================
+
+    void SnakeGame::update()
+    {
+        if( StateMachine == state::START )
+        {
+            _levels[num_levels].randPellet();
+
+            _levels[num_levels].findSolution( DEAD );
+
+            StateMachine = state::RUN;
+
+        }
+
+        if( StateMachine == state::RUN )
+        {
+            // Updating snake and maze
+            _levels[num_levels].refreshSnake( _levels[num_levels].cobra.snakeBody );
+
+            _levels[num_levels].refreshMaze();
+
+            // When ate apple restart and increasebody.
+            if( _levels[num_levels].isEaten() )
+            {
+                _levels[num_levels].cobra.increaseBody();
+
+                StateMachine = state::START;
+            }
+        }
+
+        if( DEAD )
+        {
+            _levels[num_levels].cobra.lostLife();
+
+            _levels[num_levels].cobra.resetBody();
+
+            _levels[num_levels].refreshMaze();
+
+            _levels[num_levels].resetPos();
+
+            StateMachine = state::DEAD;
+        }
+    }
+
+//===============================================================================================
+    bool SnakeGame::game_over()
+    {
+        if( StateMachine == state::DEAD )
+        {
+            if( _levels[num_levels].cobra.life() == 0 )
+            {
+                StateMachine = state::GAME_OVER;
+                //print game over message.
+            }
+            else
+            {
+                StateMachine = state::START;
+            }
+        }
+
+        if( _levels[num_levels].cobra.ate() == 10 )
+        {
+            StateMachine = state::GAME_OVER;
+            std::cout << "\n>>>END GAME<<<\n";
+        }
+
+        if( StateMachine == state::GAME_OVER ){ return true; }
+
+        return false;
+
+
+    }
 //===============================================================================================
 } // END NAMESPACE.

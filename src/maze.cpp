@@ -20,10 +20,12 @@ namespace SNAZE{
         m_maze.resize( lRow, s );
     }
 
+//==============================================================================================
 
     void maze::setStart_pos( size_t row, size_t col )
     {
         start_pos = std::make_pair( row, col );
+        current_pos = start_pos;
     }
 //==============================================================================================
 
@@ -233,10 +235,18 @@ namespace SNAZE{
 
     void maze::backTracking( std::stack< Node > & coords, bool & deadline )
     {
-        while( coords.top().directions.size() < 2 )
+        while( not ( coords.top().directions.size() > 1 )  )
         {
-            //if( coords.size() == 1 ){ break; }
             coords.pop();
+            // There is no more backtracking
+            if( coords.size() == 0 )
+            {
+                deadline = true;
+                Node temp;
+                temp.coordinate = current_pos;
+                coords.push(temp);
+                return;
+            }
         }
 
         // Remove old direction.
@@ -244,16 +254,13 @@ namespace SNAZE{
         {
             coords.top().directions.pop();
         }
-
-        // There is no more backtracking
-        if( coords.size() == 0 ){ deadline = true; }
     }
 
 //==============================================================================================
-    void maze::findSolution( bool deadline )
+    void maze::findSolution( bool &deadline )
     {
         // Maze runner and marker( Trémaux algorithm ).
-        std::pair< size_t, size_t > pathfinder = start_pos;
+        std::pair< size_t, size_t > pathfinder = current_pos;
         std::pair< size_t, size_t > markerPrev;
         //===================================================
 
@@ -265,14 +272,12 @@ namespace SNAZE{
         std::queue< std::pair< size_t, size_t >,
                     std::vector< std::pair< size_t, size_t > > > fakeBody( cobra.snakeBody );
 
-        std::cout << "coordenada maçã: " << pelletPosition.first
-                      << ", " << pelletPosition.second << "\n";
 
         //< While not found the apple.
         while(  m_maze[pathfinder.first][pathfinder.second] != '@' )
         {
             // Set the position in the stack ===================
-            coordinates.push( this->checkSides( pathfinder ) );
+            coordinates.push( checkSides( pathfinder ) );
 
             coordinates.top().coordinate = pathfinder;
             //==================================================
@@ -280,7 +285,7 @@ namespace SNAZE{
             // No valid position is endline situation --> the snake die.
             if( coordinates.top().directions.size() == 0 )
             {
-                this->backTracking( coordinates, deadline );
+                backTracking( coordinates, deadline );
 
                 pathfinder = std::make_pair( coordinates.top().coordinate.first,
                                              coordinates.top().coordinate.second );
@@ -307,7 +312,7 @@ namespace SNAZE{
             }
 
             // Moving.
-            this->moveBody( pathfinder );
+            moveBody( pathfinder );
 
             // Mark current position only if are a bifurcation
             // to eliminate that way in case of endline.
@@ -338,7 +343,7 @@ namespace SNAZE{
         }
 
         //< Setting new start position --> pellet old position.
-        setStart_pos( pathfinder.first, pathfinder.second );
+        current_pos = pathfinder;
 
     }
 //==============================================================================================
@@ -375,7 +380,7 @@ namespace SNAZE{
 
     void maze::refreshMaze()
     {
-         this->clear();
+          clear();
 
           auto first = cobra.snakeBody.begin();
           auto last = cobra.snakeBody.end();

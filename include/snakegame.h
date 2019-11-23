@@ -3,7 +3,8 @@
 
 #include "./maze.h"
 
-#include <iomanip>
+#include <iomanip> // menu interface
+#include <thread> // fps control.
 
 
 namespace SNAZE{
@@ -47,11 +48,19 @@ namespace SNAZE{
              */
             virtual void initialize( int argc, char *argv[] );
 
-
+            /*< Game render
+             * print the game in terminal.
+             */
             virtual void render();
-            virtual void update(){}
-            virtual void process_events(){}
-            virtual bool game_over(){ return true;}
+
+            virtual void update();
+
+            /*< Event control.
+             * thread sleep here.
+             */
+            virtual void process_events();
+
+            virtual bool game_over();
     };
 
 } // END NAMESPACE.
