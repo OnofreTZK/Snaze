@@ -87,6 +87,7 @@ namespace SNAZE{
             // Check a valid position.
             if( m_maze[randRow][randCol] == ' ' )
             {
+                if( ( randRow != start_pos.first ) and ( randCol != start_pos.second ) )
                 break;
             }
         }
@@ -105,6 +106,7 @@ namespace SNAZE{
     {
         size_t count = 0;
 
+        // Convolution to check walls.
         for( short int i{-1}; i < 1; i++ )
         {
             for( short int j{-1}; j < 1; j++ )
@@ -122,7 +124,27 @@ namespace SNAZE{
 
 //==============================================================================================
 
-    maze::Node maze::checkSides( std::pair< size_t, size_t > const currentPos ) const
+    bool maze::verifyBody( size_t const first, size_t const second,
+                             std::vector< std::pair< size_t, size_t > > fakeBody ) const
+    {
+        for( size_t i{0}; i < fakeBody.size(); i++ )
+        {
+            if( first == fakeBody[i].first )
+            {
+                if( second == fakeBody[i].second )
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+//==============================================================================================
+
+    maze::Node maze::checkSides( std::pair< size_t, size_t > const currentPos,
+                                 std::vector< std::pair< size_t, size_t > > fakeBody ) const
     {
         maze::Node setDir;
 
@@ -156,7 +178,10 @@ namespace SNAZE{
                 {
                     if( cobra.getDirection() != NORTH )
                     {
-                        setDir.directions.push( SOUTH );
+                        if( verifyBody( currentPos.first + 1, currentPos.second, fakeBody ) )
+                        {
+                            setDir.directions.push( SOUTH );
+                        }
                     }
                 }
             }
@@ -167,7 +192,10 @@ namespace SNAZE{
                 {
                     if( cobra.getDirection() != SOUTH )
                     {
-                        setDir.directions.push( NORTH );
+                        if( verifyBody( currentPos.first - 1, currentPos.second, fakeBody ) )
+                        {
+                            setDir.directions.push( NORTH );
+                        }
                     }
                 }
             }
@@ -178,7 +206,10 @@ namespace SNAZE{
                 {
                     if( cobra.getDirection() != EAST )
                     {
-                        setDir.directions.push( WEST );
+                        if( verifyBody( currentPos.first, currentPos.second - 1, fakeBody ) )
+                        {
+                            setDir.directions.push( WEST );
+                        }
                     }
                 }
             }
@@ -189,7 +220,10 @@ namespace SNAZE{
                 {
                     if( cobra.getDirection() != WEST )
                     {
-                        setDir.directions.push( EAST );
+                        if( verifyBody( currentPos.first, currentPos.second + 1, fakeBody ) )
+                        {
+                            setDir.directions.push( EAST );
+                        }
                     }
                 } 
             }
@@ -199,7 +233,7 @@ namespace SNAZE{
 
             if( setDir.directions.size() > 1 )
             {
-                if( this->wallCount( currentPos ) > 5 )
+                if( wallCount( currentPos ) > 5 )
                 {
                     setDir.bifurcation = true;
                 }
@@ -233,15 +267,16 @@ namespace SNAZE{
     }
 //==============================================================================================
 
-    void maze::backTracking( std::stack< Node > & coords, bool & deadline )
+    void maze::backTracking( std::stack< Node > & coords )
     {
         while( not ( coords.top().directions.size() > 1 )  )
         {
             coords.pop();
+
             // There is no more backtracking
             if( coords.size() == 0 )
             {
-                deadline = true;
+                cobra.destiny = snake::snakeState::DOOMED;
                 Node temp;
                 temp.coordinate = current_pos;
                 coords.push(temp);
@@ -257,42 +292,172 @@ namespace SNAZE{
     }
 
 //==============================================================================================
-    void maze::findSolution( bool &deadline )
+
+    void maze::findSolution()
     {
         // Maze runner and marker( Trémaux algorithm ).
-        std::pair< size_t, size_t > pathfinder = current_pos;
+        std::pair< size_t, size_t > pathfinder;
         std::pair< size_t, size_t > markerPrev;
         //===================================================
 
-        // vector of bifurcations.
+        /*------------ CHECK SNAKE STATUS --------------*/
+        if( cobra.isDEATH() )
+        {
+            pathfinder = start_pos;
+            cobra.destiny = snake::snakeState::ALIVE;
+        }
+        else
+        {
+            pathfinder = current_pos;
+            cobra.destiny = snake::snakeState::ALIVE;
+        }
+        /*----------------------------------------------*/
+
+
+         // Snake fake body to avoid move conditionals mistakes.
+         std::vector< std::pair< size_t, size_t > > fakeBody( cobra.snakeBody );
+
+         // vector of bifurcations.
          std::stack< Node > coordinates;
-        //=============================================
-
-        // Snake fake body to avoid move conditionals mistakes.
-        std::queue< std::pair< size_t, size_t >,
-                    std::vector< std::pair< size_t, size_t > > > fakeBody( cobra.snakeBody );
-
 
         //< While not found the apple.
         while(  m_maze[pathfinder.first][pathfinder.second] != '@' )
         {
-            // Set the position in the stack ===================
-            coordinates.push( checkSides( pathfinder ) );
+
+            // Updating fake body.
+            fakeBody.push_back( pathfinder );
+            if( fakeBody.size() > cobra.snakeBody.size() )
+            {
+                fakeBody.erase( fakeBody.begin(), fakeBody.begin()+1 );
+            }
+
+            //Verifying stack size.
+            if( coordinates.empty() )
+            {
+                // Set the position in the stack ===================
+                coordinates.push( checkSides( pathfinder, fakeBody) );
+                coordinates.top().fakeBody = fakeBody;
+            }
+            else
+            {
+                coordinates.push( checkSides( pathfinder, coordinates.top().fakeBody ) );
+                coordinates.top().fakeBody = fakeBody;
+            }
+
+
+
+            // Updating current position fakebody.
 
             coordinates.top().coordinate = pathfinder;
             //==================================================
 
+
             // No valid position is endline situation --> the snake die.
             if( coordinates.top().directions.size() == 0 )
             {
-                backTracking( coordinates, deadline );
+                if( cobra.destiny == snake::snakeState::ALIVE )
+                {
+                    // backtracking the way.
+                    backTracking( coordinates );
 
-                pathfinder = std::make_pair( coordinates.top().coordinate.first,
-                                             coordinates.top().coordinate.second );
+                    pathfinder = std::make_pair( coordinates.top().coordinate.first,
+                                                 coordinates.top().coordinate.second );
+                }
 
-                // After backtracking all over stack.
-                if( deadline == true ){ return; }
+                if( cobra.destiny == snake::snakeState::DOOMED )
+                {
+                    // The snake will die!
+                    cobra.destiny = snake::snakeState::DEAD;
+
+                    // clear maze marks.
+                    clear();
+
+                    fakeBody.clear();
+
+                    while( m_maze[pathfinder.first][pathfinder.second] != '@' )
+                    {
+                        // Updating fake body.
+                        fakeBody.push_back( pathfinder );
+                        if( fakeBody.size() > cobra.snakeBody.size() )
+                        {
+                            fakeBody.erase( fakeBody.begin(), fakeBody.begin()+1 );
+                        }
+
+                        coordinates.top().coordinate = pathfinder;
+
+                        if( coordinates.top().directions.size() == 0 )
+                        {
+                            break;
+                        }
+
+                        //Verifying stack size.
+                        if( coordinates.empty() )
+                        {
+                            // Set the position in the stack ===================
+                            coordinates.push( checkSides( pathfinder, fakeBody) );
+                            coordinates.top().fakeBody = fakeBody;
+                        }
+                        else
+                        {
+                            coordinates.push( checkSides( pathfinder, coordinates.top().fakeBody ) );
+                            coordinates.top().fakeBody = fakeBody;
+                        }
+
+
+                        // set the top direction in the stack of valid directions.
+                        cobra.setDirection( coordinates.top().directions.top() );
+                        /*-----------------------------------------------------------*/
+                        // Positioning marker and marking maze.
+                        markerPrev = pathfinder;
+
+                        if( m_maze[markerPrev.first][markerPrev.second] == MARK )
+                        {
+                            m_maze[markerPrev.first][markerPrev.second] = CROSS_MARK;
+                        }
+                        else
+                        {
+                            m_maze[markerPrev.first][markerPrev.second] = MARK;
+                        }
+
+                        // Moving.
+                        moveBody( pathfinder );
+
+                        // Mark current position only if are a bifurcation
+                        // to eliminate that way in case of endline.
+                        if( coordinates.top().bifurcation == true )
+                        {
+                            if( m_maze[pathfinder.first][pathfinder.second] == MARK )
+                            {
+                                m_maze[pathfinder.first][pathfinder.second] = CROSS_MARK;
+                            }
+                            else
+                            {
+                                m_maze[pathfinder.first][pathfinder.second] = MARK;
+                            }
+                        }
+                       /*-----------------------------------------------------------*/
+                    }
+
+                    // Adding the final position.
+                    coordinates.push( new Node );
+                    coordinates.top().coordinate = std::make_pair( pathfinder.first, pathfinder.second );
+
+                    endLinePosition = coordinates.top().coordinate;
+                    // Reversing and passing positions to list of solutions.
+                    while( not coordinates.empty() )
+                    {
+                    solution.push_front( std::make_pair( coordinates.top().coordinate.first,
+                                           coordinates.top().coordinate.second ) );
+                    coordinates.pop(); // Eliminating the stack
+                    }
+
+                    current_pos = pathfinder;
+
+                    //End this function.
+                    return;
+                }
             }
+
 
             // set the top direction in the stack of valid directions..
             cobra.setDirection( coordinates.top().directions.top() );

@@ -76,11 +76,13 @@ namespace SNAZE{
 
     void SnakeGame::update()
     {
+
         if( StateMachine == state::START )
         {
+            // Positioning pellet in maze.
             _levels[num_levels].randPellet();
 
-            _levels[num_levels].findSolution( DEAD );
+            _levels[num_levels].findSolution();
 
             StateMachine = state::RUN;
 
@@ -102,21 +104,33 @@ namespace SNAZE{
             }
         }
 
-        if( DEAD )
+        if( _levels[num_levels].cobra.isDEATH() )
         {
+            while( not _levels[num_levels].isENDLINE() )
+            {
+                // Updating snake and maze
+                _levels[num_levels].refreshSnake( _levels[num_levels].cobra.snakeBody );
+
+                _levels[num_levels].refreshMaze();
+
+                _levels[num_levels].printMaze();
+            }
+
             _levels[num_levels].cobra.lostLife();
 
             _levels[num_levels].cobra.resetBody();
 
-            _levels[num_levels].refreshMaze();
-
             _levels[num_levels].resetPos();
 
+            _levels[num_levels].refreshMaze();
+
             StateMachine = state::DEAD;
+
         }
     }
 
 //===============================================================================================
+
     bool SnakeGame::game_over()
     {
         if( StateMachine == state::DEAD )
@@ -124,11 +138,12 @@ namespace SNAZE{
             if( _levels[num_levels].cobra.life() == 0 )
             {
                 StateMachine = state::GAME_OVER;
-                //print game over message.
+                std::cout << ">>>SNAKE DIED!<<<\n";
             }
             else
             {
                 StateMachine = state::START;
+                _levels[num_levels].cobra.destiny = snake::snakeState::ALIVE;
             }
         }
 

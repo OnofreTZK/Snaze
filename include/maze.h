@@ -41,6 +41,7 @@ namespace SNAZE{
             std::pair< size_t, size_t > start_pos; //< snake start position
             std::pair< size_t, size_t > current_pos; //< snake current position.
             std::pair< size_t, size_t > pelletPosition; //< Pellet position in the maze.
+            std::pair< size_t, size_t > endLinePosition; //< Previous death position.
 
         public:
 
@@ -53,6 +54,9 @@ namespace SNAZE{
 
                 //< tells to program if is a bifurcation.
                 bool bifurcation;
+
+                // Snake fake body to avoid move conditionals mistakes.
+                std::vector< std::pair< size_t, size_t > > fakeBody;
 
                 //< Basic constructor.
                 Node( bool condition=false ) : bifurcation(condition) {/*EMPTY*/}
@@ -90,8 +94,9 @@ namespace SNAZE{
 
             inline void resetPos()
             {
-                current_pos = start_pos;
-                cobra.snakeBody[0] = current_pos;
+                cobra.snakeBody[0] = start_pos;
+
+                cobra.setDirection( NULL_DIR );
             }
 
             //< create maze with initial config.
@@ -103,8 +108,13 @@ namespace SNAZE{
             //< Count walls around to verify the bifurcation.
             size_t wallCount( std::pair< size_t, size_t > const currentPos ) const;
 
+            //< Avoid body clash.
+            bool verifyBody( size_t const first, size_t const second,
+                             std::vector< std::pair< size_t, size_t > > fakeBody ) const;
+
             //< Verify walls around the snake;
-            Node checkSides( std::pair< size_t, size_t > const currentPos ) const;
+            Node checkSides( std::pair< size_t, size_t > const currentPos,
+                             std::vector< std::pair< size_t, size_t > > fakeBody ) const;
 
             //< Move pathfinder and the fakebody.
             void moveBody( std::pair< size_t, size_t > &currentPos );
@@ -133,10 +143,10 @@ namespace SNAZE{
             /*-----------------------------------------------------------------------------*/
 
             //< Backtracking algorithm.
-            void backTracking( std::stack< Node > & coords, bool & deadline );
+            void backTracking( std::stack< Node > & coords );
 
             //< Algorithm to find the best way to apple
-            void findSolution( bool & deadline );
+            void findSolution();
 
             //< Remove Trémaux marks.
             void clear();
@@ -147,6 +157,11 @@ namespace SNAZE{
             inline bool isEaten()
             {
                 return this->cobra.snakeBody[0] == this->pelletPosition;
+            }
+
+            inline bool isENDLINE()
+            {
+                return this->cobra.snakeBody[0] == this->endLinePosition;
             }
 
             //< Refresh maze config with snake and pellet.

@@ -31,12 +31,16 @@ namespace SNAZE{
 
         public:
 
+            enum class snakeState{ ALIVE=0, DEAD, DOOMED };
+
+            snakeState destiny;
+
             // Public for class maze.
             std::vector< std::pair< size_t, size_t > > snakeBody; //< Snake body.
 
-            // Public for class SnakeGame
+            // Public for solve method in maze class.
             char direction; //< Current direction status --> DEFAULT = NULL.
-      /*--------------------------------- Methods ----------------------------------------*/
+
 
             //< Constructor
             snake()
@@ -53,6 +57,9 @@ namespace SNAZE{
                 // default number of lifes;
                 lifes = 5;
 
+                // Snake is alive.
+                destiny = snake::snakeState::ALIVE;
+
             }
 
 
@@ -60,6 +67,8 @@ namespace SNAZE{
             ~snake()
             {/*EMPTY*/}
 
+
+      /*--------------------------------- Methods ----------------------------------------*/
 
             //< Return current direction
             inline char const getDirection() const
@@ -92,7 +101,13 @@ namespace SNAZE{
             //< Decrement life
             inline void lostLife()
             {
-                lifes--;
+                lifes = lifes - 1;
+            }
+
+            //< Tell to the other classes the snake status.
+            inline bool isDEATH()
+            {
+                return destiny == snake::snakeState::DEAD;
             }
 
             //< return body size
@@ -107,6 +122,7 @@ namespace SNAZE{
                 return lifes;
             }
 
+            //< Return how many apples the snake ate.
             inline size_t ate()
             {
                 return applesEaten;

@@ -53,6 +53,12 @@ namespace SNAZE{
              */
             virtual void render();
 
+            /* Main game process
+             * Solve the maze
+             * Pass solution to the snake
+             * refresh maze status
+             * manipulate snake size and life
+             */
             virtual void update();
 
             /*< Event control.
