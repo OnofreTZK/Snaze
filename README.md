@@ -38,7 +38,7 @@ $ ./gsnake [<mazeConfigfile.dat>]
 ### Check availiable mazes in `/data`
 
 ## Example of expected end game output:
-<img src="./image/SnazeOutput.png" width=450>
+<img src="./image/SnazeOutput.png" width=300>
 
 ## Authorship
 
