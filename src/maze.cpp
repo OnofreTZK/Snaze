@@ -278,7 +278,7 @@ namespace SNAZE{
             {
                 cobra.destiny = snake::snakeState::DOOMED;
                 Node temp;
-                temp.coordinate = current_pos;
+                temp.coordinate = start_pos;
                 coords.push(temp);
                 return;
             }
@@ -331,19 +331,9 @@ namespace SNAZE{
                 fakeBody.erase( fakeBody.begin(), fakeBody.begin()+1 );
             }
 
-            //Verifying stack size.
-            if( coordinates.empty() )
-            {
-                // Set the position in the stack ===================
-                coordinates.push( checkSides( pathfinder, fakeBody) );
-                coordinates.top().fakeBody = fakeBody;
-            }
-            else
-            {
-                coordinates.push( checkSides( pathfinder, coordinates.top().fakeBody ) );
-                coordinates.top().fakeBody = fakeBody;
-            }
 
+            coordinates.push( checkSides( pathfinder, fakeBody ) );
+            coordinates.top().fakeBody = fakeBody;
 
 
             // Updating current position fakebody.
@@ -385,22 +375,12 @@ namespace SNAZE{
 
                         coordinates.top().coordinate = pathfinder;
 
+                        coordinates.push( checkSides( pathfinder, fakeBody ) );
+                        coordinates.top().fakeBody = fakeBody;
+
                         if( coordinates.top().directions.size() == 0 )
                         {
                             break;
-                        }
-
-                        //Verifying stack size.
-                        if( coordinates.empty() )
-                        {
-                            // Set the position in the stack ===================
-                            coordinates.push( checkSides( pathfinder, fakeBody) );
-                            coordinates.top().fakeBody = fakeBody;
-                        }
-                        else
-                        {
-                            coordinates.push( checkSides( pathfinder, coordinates.top().fakeBody ) );
-                            coordinates.top().fakeBody = fakeBody;
                         }
 
 
@@ -446,9 +426,9 @@ namespace SNAZE{
                     // Reversing and passing positions to list of solutions.
                     while( not coordinates.empty() )
                     {
-                    solution.push_front( std::make_pair( coordinates.top().coordinate.first,
+                        solution.push_front( std::make_pair( coordinates.top().coordinate.first,
                                            coordinates.top().coordinate.second ) );
-                    coordinates.pop(); // Eliminating the stack
+                        coordinates.pop(); // Eliminating the stack
                     }
 
                     current_pos = pathfinder;
@@ -567,7 +547,14 @@ namespace SNAZE{
                 // START POS/SNAKE HEAD
                 if( m_maze[i][j] == SNK_BDY )
                 {
-                   std::cout << "\x1b[94mO\x1b[0m";
+                    if( i == cobra.snakeBody[0].first and j == cobra.snakeBody[0].second )
+                    {
+                        std::cout << "\x1b[92m@\x1b[0m";
+                    }
+                    else
+                    {
+                        std::cout << "\x1b[94mO\x1b[0m";
+                    }
                 }
                 // IGNORE OLD ORIGIN POS.
                 else if( m_maze[i][j] == '#' ) // WALL

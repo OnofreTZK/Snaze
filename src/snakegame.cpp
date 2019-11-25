@@ -21,6 +21,39 @@ namespace SNAZE{
     }
 
 //===============================================================================================
+
+    void SnakeGame::printInterface()
+    {
+
+        std::stringstream sHeart;
+        for( int i{0}; i < _levels[num_levels].cobra.life(); i++ )
+        {
+            sHeart << heart;
+        }
+
+
+        std::stringstream ss;
+        ss <<   "\x1b[32m********************************************\n" <<
+                "*                                          *\n" <<
+                "*  ******  *     *  ******  ******  ****** *\n" <<
+                "*  *       * *   *  *    *      *   *      *\n" <<
+                "*  ******  *  *  *  * ** *    *     ****   *\n" <<
+                "*       *  *   * *  *    *  *       *      *\n" <<
+                "*  ******  *    **  *    *  ******  ****** *\n" <<
+                "*                                          *\n" <<
+                "********************************************\n\x1b[0m"
+
+            << "\x1b[32m" << std::setfill('*') << std::setw(45) << "\n"
+            << "| LIFE: \x1b[31m" << sHeart.str()
+            << "  \x1b[32m|" << " LEVEL: " << num_levels + 1 << " |"
+            << " APPLES: \x1b[93m " << _levels[num_levels].cobra.ate() << "\x1b[32m  |"
+            << "\n\x1b[32m" << std::setfill('*') << std::setw(48) << "\x1b[0m" << std::endl;
+
+        std::cout << ss.str() << "\n";
+
+    }
+
+//===============================================================================================
     void SnakeGame::initialize( int argc, char *argv[] )
     {
         // Checking parameter.
@@ -43,6 +76,9 @@ namespace SNAZE{
         // Initializing state machine.
         StateMachine = state::START;
 
+        // Initializing score.
+        score = 0;
+
         std::cout << ">>>Levels loaded: " << _levels.size()-1 << "\n";
 
         printIntro();
@@ -61,8 +97,15 @@ namespace SNAZE{
 
     void SnakeGame::render()
     {
-        //print stats.
+        //print interface
+        printInterface();
+
+        //print score
+        std::cout << "\n\t\x1b[32mSCORE: \x1b[93m" << score << "\x1b[0m\n\n";
+
+        //print maze
         _levels[num_levels].printMaze();
+        std::cout << "\n\n\n";
     }
 
 //===============================================================================================
@@ -76,6 +119,36 @@ namespace SNAZE{
 
     void SnakeGame::update()
     {
+
+        // Change Level.
+        if( StateMachine == state::LEVEL_UP )
+        {
+            if( _levels.size() > 2 )
+            {
+                num_levels++;
+
+                // Avoid seg fault.
+                if( num_levels >= _levels.size() - 1 )
+                {
+                     num_levels = 0;
+                }
+
+                if( num_levels == 0 )
+                {
+                    _levels[num_levels].cobra.getSnake(_levels[_levels.size()-2].cobra,
+                                                       _levels[num_levels].getStart() );
+                }
+                else
+                {
+                    _levels[num_levels].cobra.getSnake(_levels[num_levels-1].cobra,
+                                                       _levels[num_levels].getStart() );
+                }
+            }
+
+            // Start maze level.
+            StateMachine = state::START;
+        }
+
 
         if( StateMachine == state::START )
         {
@@ -98,11 +171,37 @@ namespace SNAZE{
             // When ate apple restart and increasebody.
             if( _levels[num_levels].isEaten() )
             {
+
+                // Score control.
+                score += 200;
+
                 _levels[num_levels].cobra.increaseBody();
 
-                StateMachine = state::START;
+                if( _levels.size() > 2 )
+                {
+
+                    if( _levels[num_levels].cobra.ate()%2 == 0 )
+                    {
+                        if( _levels[num_levels].cobra.ate() > 0 )
+                        {
+                            StateMachine = state::LEVEL_UP;
+                        }
+                    }
+                    else
+                    {
+                        StateMachine = state::START;
+                    }
+
+                }
+                else
+                {
+                    StateMachine = state::START;
+                }
+
             }
+
         }
+
 
         if( _levels[num_levels].cobra.isDEATH() )
         {
@@ -113,7 +212,15 @@ namespace SNAZE{
 
                 _levels[num_levels].refreshMaze();
 
+                //print interface
+                printInterface();
+
+                //print score
+                std::cout << "\n\t\x1b[32mSCORE: \x1b[93m" << score << "\x1b[0m\n\n";
+
+                //print maze
                 _levels[num_levels].printMaze();
+                std::cout << "\n\n\n";
             }
 
             _levels[num_levels].cobra.lostLife();
@@ -125,6 +232,11 @@ namespace SNAZE{
             _levels[num_levels].refreshMaze();
 
             StateMachine = state::DEAD;
+
+            // Score control.
+            score -= 100;
+
+            if( score < 0 ){ score = 0; };
 
         }
     }
@@ -138,7 +250,7 @@ namespace SNAZE{
             if( _levels[num_levels].cobra.life() == 0 )
             {
                 StateMachine = state::GAME_OVER;
-                std::cout << ">>>SNAKE DIED!<<<\n";
+                std::cout << "\t\x1b[31m>>>THE SNAKE DIED!<<<\x1b[0m\n\n";
             }
             else
             {
@@ -150,7 +262,7 @@ namespace SNAZE{
         if( _levels[num_levels].cobra.ate() == 10 )
         {
             StateMachine = state::GAME_OVER;
-            std::cout << "\n>>>END GAME<<<\n";
+            std::cout << "\n\t\x1b[32m>>>THE SNAKE WON THE GAME!<<<\x1b[0m\n\n";
         }
 
         if( StateMachine == state::GAME_OVER ){ return true; }

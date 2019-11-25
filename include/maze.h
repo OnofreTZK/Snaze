@@ -92,6 +92,11 @@ namespace SNAZE{
             //< get start position
             void setStart_pos( size_t row, size_t col );
 
+            inline std::pair< size_t, size_t > getStart()
+            {
+                return start_pos;
+            }
+
             inline void resetPos()
             {
                 cobra.snakeBody[0] = start_pos;

@@ -128,6 +128,20 @@ namespace SNAZE{
                 return applesEaten;
             }
 
+            //Overloading operator to level up with same snake.
+            inline void getSnake( snake other, std::pair< size_t, size_t> pos )
+            {
+                snakeBody.resize( other.snakeBody.size() );
+
+                snakeBody.assign( snakeBody.size(), pos );
+
+                lifes = other.life();
+
+                applesEaten = other.ate();
+
+                direction = other.getDirection();
+            }
+
 
     };
 

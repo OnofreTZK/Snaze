@@ -23,10 +23,13 @@ namespace SNAZE{
 
             state StateMachine;
 
-            //< Death control.
-            bool DEAD;
-
+            //< index to level up.
             size_t num_levels;
+
+            std::string heart = "♡";
+
+            //< count score game.
+            size_t score;
 
         public:
 
@@ -35,6 +38,9 @@ namespace SNAZE{
 
             //< Print SNAZE in output.
             friend void printIntro();
+
+            //< print number of lifes, level, eaten apples.
+            void printInterface();
 
             //< Destructor.
             virtual ~SnakeGame(){}
@@ -66,6 +72,10 @@ namespace SNAZE{
              */
             virtual void process_events();
 
+            /* Verify game over situations
+             * No lifes
+             * Max apple eatens.
+             */
             virtual bool game_over();
     };
 
