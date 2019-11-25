@@ -134,7 +134,7 @@ namespace SNAZE{
                 {
                      num_levels = 0;
                 }
-
+/*
                 if( num_levels == 0 )
                 {
                     _levels[num_levels].cobra.getSnake(_levels[_levels.size()-2].cobra,
@@ -144,7 +144,7 @@ namespace SNAZE{
                 {
                     _levels[num_levels].cobra.getSnake(_levels[num_levels-1].cobra,
                                                        _levels[num_levels].getStart() );
-                }
+                }*/
             }
 
             // Start maze level.
@@ -182,12 +182,9 @@ namespace SNAZE{
                 if( _levels.size() > 2 )
                 {
 
-                    if( _levels[num_levels].cobra.ate()%2 == 0 )
+                    if( _levels[num_levels].cobra.ate() == 10 )
                     {
-                        if( _levels[num_levels].cobra.ate() > 0 )
-                        {
-                            StateMachine = state::LEVEL_UP;
-                        }
+                        StateMachine = state::LEVEL_UP;
                     }
                     else
                     {
@@ -264,13 +261,33 @@ namespace SNAZE{
             }
         }
 
+
+
         if( _levels[num_levels].cobra.ate() == 10 )
         {
-            StateMachine = state::GAME_OVER;
-            std::cout << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n"
-                      << "  \x1b[32m*>>>THE SNAKE WON THE GAME!<<<*\x1b[0m\n"
-                      << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n";
+            if( StateMachine == state::LEVEL_UP )
+            {
+                if( num_levels == _levels.size() - 2 )
+                {
+                    StateMachine = state::GAME_OVER;
+                    std::cout << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n"
+                              << "  \x1b[32m*>>>THE SNAKE WON THE GAME!<<<*\x1b[0m\n"
+                              << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n";
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                StateMachine = state::GAME_OVER;
+                std::cout << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n"
+                          << "  \x1b[32m*>>>THE SNAKE WON THE GAME!<<<*\x1b[0m\n"
+                          << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n";
+            }
         }
+
 
         if( StateMachine == state::GAME_OVER ){ return true; }
 
