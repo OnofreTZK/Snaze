@@ -114,6 +114,16 @@ namespace SNAZE{
 
     void SnakeGame::process_events()
     {
+        if( StateMachine == state::LEVEL_UP )
+        {
+            std::cout << "\n\t->Press \x1b[94m<ENTER>\x1b[0m to next level.\n";
+
+            while( std::cin.get() != '\n' )
+            {
+                continue;
+            }
+
+        }
         //Thread control (fps).
         std::this_thread::sleep_for( std::chrono::milliseconds( 1000/15 ) );
     }
@@ -134,17 +144,6 @@ namespace SNAZE{
                 {
                      num_levels = 0;
                 }
-/*
-                if( num_levels == 0 )
-                {
-                    _levels[num_levels].cobra.getSnake(_levels[_levels.size()-2].cobra,
-                                                       _levels[num_levels].getStart() );
-                }
-                else
-                {
-                    _levels[num_levels].cobra.getSnake(_levels[num_levels-1].cobra,
-                                                       _levels[num_levels].getStart() );
-                }*/
             }
 
             // Start maze level.

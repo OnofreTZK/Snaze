@@ -15,5 +15,7 @@ int main ( int argc, char *argv[] )
         game.render();
     }
 
+    std::cout << "\n\n>>>Ending game...\n";
+
     return EXIT_SUCCESS;
 }
