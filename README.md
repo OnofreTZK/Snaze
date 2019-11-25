@@ -15,3 +15,18 @@ Run the classic snake game inside a maze! The challenge? Provide to snake the co
 5. Everytime the snake crashes into itself or into a wall it looses one life; The snake loses the game simulation when all 5 lives are spent.
 
 6. The snake wins the game simulation if it eats all the food pellets in all levels.
+
+## Compile and Run
+
+Downloading:
+```bash
+$ git clone https://github.com/OnofreTZK/Snaze.git
+``` 
+
+In the root:
+```bash
+$ cmake -S . -Bbuild && build
+
+$ make
+```
+
