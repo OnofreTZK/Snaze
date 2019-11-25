@@ -105,7 +105,9 @@ namespace SNAZE{
 
         //print maze
         _levels[num_levels].printMaze();
-        std::cout << "\n\n\n";
+        std::cout << "\n\n";
+
+        std::cout << "\x1b[32m" << std::setfill('*') << std::setw(46) << "\n\n";
     }
 
 //===============================================================================================
@@ -205,6 +207,7 @@ namespace SNAZE{
 
         if( _levels[num_levels].cobra.isDEATH() )
         {
+            /*
             while( not _levels[num_levels].isENDLINE() )
             {
                 // Updating snake and maze
@@ -221,7 +224,7 @@ namespace SNAZE{
                 //print maze
                 _levels[num_levels].printMaze();
                 std::cout << "\n\n\n";
-            }
+            }*/
 
             _levels[num_levels].cobra.lostLife();
 
@@ -250,7 +253,9 @@ namespace SNAZE{
             if( _levels[num_levels].cobra.life() == 0 )
             {
                 StateMachine = state::GAME_OVER;
-                std::cout << "\t\x1b[31m>>>THE SNAKE DIED!<<<\x1b[0m\n\n";
+                std::cout << "  \x1b[31m" << std::setfill('*') << std::setw(24) << "\n"
+                          << "  \x1b[31m*>>>THE SNAKE DIED!<<<*\x1b[0m\n"
+                          << "  \x1b[31m" << std::setfill('*') << std::setw(24) << "\n";
             }
             else
             {
@@ -262,7 +267,9 @@ namespace SNAZE{
         if( _levels[num_levels].cobra.ate() == 10 )
         {
             StateMachine = state::GAME_OVER;
-            std::cout << "\n\t\x1b[32m>>>THE SNAKE WON THE GAME!<<<\x1b[0m\n\n";
+            std::cout << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n"
+                      << "  \x1b[32m*>>>THE SNAKE WON THE GAME!<<<*\x1b[0m\n"
+                      << "  \x1b[32m" << std::setfill('*') << std::setw(32) << "\n";
         }
 
         if( StateMachine == state::GAME_OVER ){ return true; }
