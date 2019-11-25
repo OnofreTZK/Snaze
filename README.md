@@ -23,10 +23,17 @@ Downloading:
 $ git clone https://github.com/OnofreTZK/Snaze.git
 ``` 
 
-In the root:
+In root:
 ```bash
 $ cmake -S . -Bbuild && build
 
 $ make
 ```
+
+To run:
+```bash 
+$ ./gsnake [<mazeConfigfile.dat>]
+```
+
+
 
