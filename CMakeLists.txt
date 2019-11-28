@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 project( SNAZE VERSION 0.1 LANGUAGES CXX)
 
 
-find_package( GTest REQUIRED )
-include_directories( ${GTEST_INCLUDE_DIRS} )
-
 # set the compiling flags
 set ( CMAKE_CXX_FLAGS "-Wall" )
 #CMAKE_CXX_FLAGS = "-Wall";
