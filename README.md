@@ -25,7 +25,7 @@ $ git clone https://github.com/OnofreTZK/Snaze.git
 
 In root:
 ```bash
-$ cmake -S . -Bbuild && build
+$ cmake -S . -Bbuild && cd build
 
 $ make
 ```
